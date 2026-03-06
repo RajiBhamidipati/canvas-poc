@@ -7,10 +7,10 @@ import { AddressForm } from "@/components/address-form";
 import { ApprovalView } from "@/components/approval-view";
 import { AuditPanel } from "@/components/audit-panel";
 import type { AuditEntry } from "@/components/audit-panel";
-import { useRef, useEffect, useMemo } from "react";
+import { useMemo, useState } from "react";
 
 // Map tool result component names to actual React components
-function ToolResult({ toolName, result }: { toolName: string; result: Record<string, unknown> }) {
+function ToolResult({ toolName: _toolName, result }: { toolName: string; result: Record<string, unknown> }) {
   if (result.error) {
     return (
       <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-800">
@@ -98,91 +98,21 @@ function ToolResult({ toolName, result }: { toolName: string; result: Record<str
     );
   }
 
-  // fetch_customer result — show enriched customer card
-  if (toolName === "fetch_customer" && result.id) {
-    const r = result as Record<string, unknown>;
-    const identity = r.identity as Record<string, string> | undefined;
-    const contact = r.contact as Record<string, unknown> | undefined;
-    const compliance = r.compliance as Record<string, string> | undefined;
-    const relationship = r.relationship as Record<string, unknown> | undefined;
-    const address = contact
-      ? (contact.currentAddress as Record<string, string>)
-      : (r.address as Record<string, string>);
-    const displayName = identity?.preferredName || String(r.name || "");
-    const kycStatus = identity?.kycStatus;
-    const riskRating = compliance?.riskRating;
-    const amlFlag = compliance?.amlFlag;
-    const isJoint = relationship?.isJointAccount;
-    const products = r.products as unknown[] | undefined;
-
-    return (
-      <div className="rounded-md bg-muted/30 border px-3 py-2.5 text-xs max-w-md space-y-1.5">
-        <div className="flex items-center justify-between">
-          <span className="font-medium text-sm">{displayName}</span>
-          <span className="text-muted-foreground font-mono">{String(r.id)}</span>
-        </div>
-        <p className="text-muted-foreground">
-          {address?.street}, {address?.city}, {address?.postcode}
-        </p>
-        {/* Compliance badges */}
-        {(kycStatus || riskRating || amlFlag) && (
-          <div className="flex flex-wrap gap-1 pt-0.5">
-            {kycStatus && (
-              <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium border ${
-                kycStatus === "verified" ? "bg-green-50 text-green-700 border-green-200" : "bg-amber-50 text-amber-700 border-amber-200"
-              }`}>
-                KYC: {kycStatus}
-              </span>
-            )}
-            {riskRating && (
-              <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium border ${
-                riskRating === "low" ? "bg-green-50 text-green-700 border-green-200" : "bg-amber-50 text-amber-700 border-amber-200"
-              }`}>
-                Risk: {riskRating}
-              </span>
-            )}
-            {amlFlag && (
-              <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium border ${
-                amlFlag === "clear" ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"
-              }`}>
-                AML: {amlFlag}
-              </span>
-            )}
-            {isJoint === true && (
-              <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium border bg-blue-50 text-blue-700 border-blue-200">
-                Joint Account
-              </span>
-            )}
-            {products && (
-              <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium border bg-muted text-muted-foreground">
-                {products.length} products
-              </span>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  }
-
   return null;
 }
 
-export default function ChatPage() {
-  const { messages, input, handleInputChange, handleSubmit, append, isLoading, setMessages } = useChat({
+export default function PlatformPage() {
+  const [persona, setPersona] = useState<"agent" | "manager" | null>(null);
+  const [newStreet, setNewStreet] = useState("");
+  const [newCity, setNewCity] = useState("");
+  const [newPostcode, setNewPostcode] = useState("");
+
+  const { messages, append, isLoading, setMessages } = useChat({
     api: "/api/chat",
     maxSteps: 5,
   });
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll to bottom on new messages
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  // Extract audit entries from tool invocation results (client-side)
+  // Extract audit entries from tool invocations
   const auditEntries: AuditEntry[] = useMemo(() => {
     const entries: AuditEntry[] = [];
     for (const message of messages) {
@@ -207,23 +137,7 @@ export default function ChatPage() {
     return entries;
   }, [messages]);
 
-  // Detect persona from the first user message in the conversation
-  const detectedPersona = useMemo((): "agent" | "manager" | null => {
-    const first = messages.find(m => m.role === "user");
-    if (!first) return null;
-    const text = first.content.toLowerCase();
-    if (text.includes("agent") || text.includes("sarah") || text.includes("call centre") || text.includes("call center")) return "agent";
-    if (text.includes("manager") || text.includes("james") || text.includes("case manager") || text.includes("back-office")) return "manager";
-    return null;
-  }, [messages]);
-
-  const quickPrompts = [
-    { label: "Agent: Live address change", text: "I'm Sarah, a call centre agent. I'm on a call — the customer has moved to 221B Baker Street, London, NW1 6XE." },
-    { label: "Manager: Review pending task", text: "I'm James, a case manager. I have a pending task to review an address change for CUST-123." },
-    { label: "Guardrail test: Agent tries to approve", text: "I'm Sarah, an agent. I want to approve the pending address change for CUST-123." },
-  ];
-
-  // Extract the latest rendered component (AddressForm / ApprovalView) to display on the canvas
+  // Extract the latest rendered component for the canvas
   const activeComponent = useMemo(() => {
     for (let i = messages.length - 1; i >= 0; i--) {
       const invocations = messages[i].toolInvocations;
@@ -238,151 +152,327 @@ export default function ChatPage() {
     return null;
   }, [messages]);
 
+  // Last assistant text message (for guardrail feedback, etc.)
+  const lastAssistantText = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === "assistant" && messages[i].content) {
+        return messages[i].content;
+      }
+    }
+    return null;
+  }, [messages]);
+
+  const hasResponse = messages.length > 0;
+
+  const handlePersonaSelect = (p: "agent" | "manager") => {
+    setPersona(p);
+    setMessages([]);
+    setNewStreet("");
+    setNewCity("");
+    setNewPostcode("");
+  };
+
+  const handleReset = () => {
+    setPersona(null);
+    setMessages([]);
+  };
+
+  const fireAgentAction = () => {
+    setMessages([]);
+    const addressPart = newStreet
+      ? ` The customer wants to update their address to ${newStreet}, ${newCity}, ${newPostcode}.`
+      : "";
+    append({
+      role: "user",
+      content: `I'm Sarah, a call centre agent. I'm on a live call with the customer.${addressPart} Please open the address change form.`,
+    });
+  };
+
+  const fireManagerAction = () => {
+    setMessages([]);
+    append({
+      role: "user",
+      content: `I'm James, a case manager. I need to review the pending address change for CUST-123.`,
+    });
+  };
+
+  const fireGuardrailTest = () => {
+    setMessages([]);
+    append({
+      role: "user",
+      content: `I'm Sarah, an agent. I want to approve the pending address change for CUST-123.`,
+    });
+  };
+
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* ── Left panel: chat ── */}
-      <div className="flex flex-col w-[400px] min-w-[320px] border-r bg-background flex-shrink-0">
-        {/* Header */}
-        <header className="bg-[#1F1F1F] text-white px-5 py-3 flex-shrink-0 flex items-center justify-between">
+      {/* ── Left: Platform context sidebar ── */}
+      <div className="flex flex-col w-[380px] min-w-[320px] border-r bg-background flex-shrink-0">
+        {/* Platform header */}
+        <header className="bg-[#1F1F1F] text-white px-5 py-3.5 flex-shrink-0 flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold tracking-tight">
+              <h1 className="text-base font-bold tracking-tight">
                 <span className="text-[#ECF3B7]">Canvas</span>
+                <span className="text-white/30 font-normal ml-1.5 text-sm">/ Servicing Platform</span>
               </h1>
-              {detectedPersona && (
-                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                  detectedPersona === "agent"
-                    ? "bg-[#6686F7]/20 text-[#6686F7] border border-[#6686F7]/30"
-                    : "bg-[#ECF3B7]/20 text-[#ECF3B7] border border-[#ECF3B7]/30"
-                }`}>
-                  {detectedPersona === "agent" ? "Agent" : "Manager"}
-                </span>
-              )}
             </div>
-            <p className="text-[10px] text-white/40">
-              Generative UI &middot; Address Servicing POC
-            </p>
+            <p className="text-[10px] text-white/30 mt-0.5">Generative UI · Address Servicing POC</p>
           </div>
-          {messages.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setMessages([])}
-              className="text-xs rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white"
+          {persona && (
+            <button
+              onClick={handleReset}
+              className="text-xs text-white/40 hover:text-white/70 transition-colors"
             >
-              New Chat
-            </Button>
+              Switch user
+            </button>
           )}
         </header>
 
-        {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.length === 0 && (
-            <div className="mt-10 space-y-3">
-              <p className="text-center text-sm font-medium text-muted-foreground">Try one of these prompts:</p>
-              <div className="space-y-2">
-                {quickPrompts.map((prompt, i) => (
-                  <button
-                    key={i}
-                    disabled={isLoading}
-                    onClick={() => append({ role: "user", content: prompt.text })}
-                    className="w-full text-left rounded-xl border px-4 py-3 hover:bg-[#ECF3B7]/20 hover:border-[#ECF3B7]/50 hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <p className="text-xs font-medium text-foreground">{prompt.label}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{prompt.text}</p>
-                  </button>
-                ))}
+        {/* Sidebar body */}
+        <div className="flex-1 overflow-y-auto p-5 space-y-5">
+          {!persona ? (
+            /* ── Persona selection (simulates SSO login) ── */
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">
+                  Sign in as
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  In production, your identity comes from SSO. Select a role to simulate the platform context Canvas receives.
+                </p>
               </div>
-              <p className="text-center text-xs text-muted-foreground pt-1">
-                The third prompt tests the guardrail &mdash; agents can&apos;t approve (maker-checker policy).
-              </p>
-            </div>
-          )}
 
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[90%] ${
-                  message.role === "user"
-                    ? "bg-[#1F1F1F] text-white rounded-2xl px-4 py-2.5 text-sm"
-                    : "space-y-3"
-                }`}
+              <button
+                onClick={() => handlePersonaSelect("agent")}
+                className="w-full text-left rounded-xl border-2 border-transparent hover:border-[#6686F7]/50 bg-muted/40 hover:bg-[#6686F7]/5 p-4 transition-all group"
               >
-                {message.content && (
-                  <p className={message.role === "assistant" ? "text-sm" : ""}>{message.content}</p>
-                )}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#6686F7]/20 flex items-center justify-center text-[#6686F7] text-sm font-bold flex-shrink-0">
+                    SC
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">Sarah Chen</p>
+                    <p className="text-xs text-muted-foreground">Call Centre Agent · Team 3</p>
+                  </div>
+                  <svg className="ml-auto h-4 w-4 text-muted-foreground/40 group-hover:text-[#6686F7] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </button>
 
-                {/* Only show fetch_customer cards inline; AddressForm/ApprovalView go to the canvas */}
-                {message.toolInvocations?.map((invocation) => {
-                  if (invocation.state === "result") {
-                    if (invocation.result?.component) {
-                      // Rendered component — show a pill linking to the canvas instead
-                      return (
-                        <div key={invocation.toolCallId} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#6686F7]" />
-                          {invocation.result.component === "AddressForm" ? "Address form" : "Approval view"} rendered on canvas →
-                        </div>
-                      );
-                    }
-                    return (
-                      <ToolResult
-                        key={invocation.toolCallId}
-                        toolName={invocation.toolName}
-                        result={invocation.result as Record<string, unknown>}
-                      />
-                    );
-                  }
-                  return (
-                    <div key={invocation.toolCallId} className="text-xs text-muted-foreground animate-pulse">
-                      Loading {invocation.toolName.replace(/_/g, " ")}...
-                    </div>
-                  );
-                })}
+              <button
+                onClick={() => handlePersonaSelect("manager")}
+                className="w-full text-left rounded-xl border-2 border-transparent hover:border-[#ECF3B7]/70 bg-muted/40 hover:bg-[#ECF3B7]/5 p-4 transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#ECF3B7]/30 flex items-center justify-center text-[#1F1F1F] text-sm font-bold flex-shrink-0">
+                    JW
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">James Wright</p>
+                    <p className="text-xs text-muted-foreground">Case Manager · Back Office</p>
+                  </div>
+                  <svg className="ml-auto h-4 w-4 text-muted-foreground/40 group-hover:text-[#ECF3B7] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </button>
+
+              <div className="pt-1 border-t">
+                <p className="text-[11px] text-muted-foreground/60 leading-relaxed">
+                  Canvas receives your identity and open customer context as structured signals. The LLM selects and renders the appropriate UI — no prompt required.
+                </p>
               </div>
             </div>
-          ))}
-
-          {isLoading && messages[messages.length - 1]?.role === "user" && (
-            <div className="flex justify-start">
-              <div className="flex gap-1 px-3 py-2">
-                <span className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce" />
-                <span className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce [animation-delay:0.15s]" />
-                <span className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce [animation-delay:0.3s]" />
+          ) : (
+            /* ── Logged-in platform view ── */
+            <div className="space-y-5">
+              {/* Identity bar */}
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/40">
+                {persona === "agent" ? (
+                  <>
+                    <div className="w-9 h-9 rounded-full bg-[#6686F7]/20 flex items-center justify-center text-[#6686F7] text-xs font-bold flex-shrink-0">
+                      SC
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">Sarah Chen</p>
+                      <p className="text-xs text-muted-foreground">Call Centre Agent · Team 3</p>
+                    </div>
+                    <span className="ml-auto text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#6686F7]/10 text-[#6686F7] border border-[#6686F7]/20">
+                      Agent
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-9 h-9 rounded-full bg-[#ECF3B7]/30 flex items-center justify-center text-[#1F1F1F] text-xs font-bold flex-shrink-0">
+                      JW
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">James Wright</p>
+                      <p className="text-xs text-muted-foreground">Case Manager · Back Office</p>
+                    </div>
+                    <span className="ml-auto text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#ECF3B7]/20 text-[#1F1F1F] border border-[#ECF3B7]/40">
+                      Manager
+                    </span>
+                  </>
+                )}
               </div>
+
+              {/* Open customer record */}
+              <div>
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">
+                  Open Customer Record
+                </p>
+                <div className="rounded-xl border bg-muted/20 p-3 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Alex Morgan</span>
+                    <span className="text-xs font-mono text-muted-foreground">CUST-123</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">14 Primrose Hill, London, NW3 3AD</p>
+                  <div className="flex flex-wrap gap-1.5 pt-0.5">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">KYC verified</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">AML clear</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground border">Premium</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Agent actions ── */}
+              {persona === "agent" && (
+                <div className="space-y-3">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+                    Live Call — Address Change
+                  </p>
+                  <div className="rounded-xl border border-orange-200 bg-orange-50/60 px-3 py-2.5 flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-orange-500 animate-pulse flex-shrink-0" />
+                    <span className="text-xs text-orange-800 font-medium">Customer on the line — requesting address update</span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground">New address told by customer (optional — pre-fills the form):</p>
+                    <Input
+                      placeholder="Street"
+                      value={newStreet}
+                      onChange={(e) => setNewStreet(e.target.value)}
+                      disabled={isLoading}
+                      className="text-xs h-8"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input
+                        placeholder="City"
+                        value={newCity}
+                        onChange={(e) => setNewCity(e.target.value)}
+                        disabled={isLoading}
+                        className="text-xs h-8"
+                      />
+                      <Input
+                        placeholder="Postcode"
+                        value={newPostcode}
+                        onChange={(e) => setNewPostcode(e.target.value)}
+                        disabled={isLoading}
+                        className="text-xs h-8"
+                      />
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={fireAgentAction}
+                    disabled={isLoading}
+                    className="w-full bg-[#1F1F1F] hover:bg-[#1F1F1F]/80 text-white text-xs"
+                  >
+                    {isLoading ? "Opening form…" : "Open Address Change Form"}
+                  </Button>
+                </div>
+              )}
+
+              {/* ── Manager actions ── */}
+              {persona === "manager" && (
+                <div className="space-y-3">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+                    Task Queue
+                  </p>
+                  <div className="rounded-xl border p-3 space-y-2 bg-muted/20">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium">Address Change — Review Required</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-medium">
+                        Pending
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">CUST-123 · Submitted by Sarah Chen</p>
+                    <p className="text-xs text-muted-foreground">
+                      14 Primrose Hill → 221B Baker Street, NW1 6XE
+                    </p>
+                  </div>
+                  <Button
+                    onClick={fireManagerAction}
+                    disabled={isLoading}
+                    className="w-full bg-[#1F1F1F] hover:bg-[#1F1F1F]/80 text-white text-xs"
+                  >
+                    {isLoading ? "Loading…" : "Review Pending Change"}
+                  </Button>
+                </div>
+              )}
+
+              {/* Canvas response text (guardrail messages, etc.) */}
+              {hasResponse && lastAssistantText && !activeComponent && (
+                <div className="rounded-xl border bg-muted/30 p-3">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">
+                    Canvas Response
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{lastAssistantText}</p>
+                </div>
+              )}
+
+              {/* Guardrail test (agent only) */}
+              {persona === "agent" && (
+                <div className="pt-1 border-t space-y-2">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+                    Guardrail Test
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Agents cannot approve changes (maker-checker policy). Trigger this to see the guardrail block the request.
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={fireGuardrailTest}
+                    disabled={isLoading}
+                    className="w-full text-xs border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                  >
+                    Try: Approve as Agent (blocked)
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
-
-        {/* Input */}
-        <form onSubmit={handleSubmit} className="border-t p-4 flex gap-2 flex-shrink-0">
-          <Input
-            value={input}
-            onChange={handleInputChange}
-            placeholder="Type a message..."
-            disabled={isLoading}
-            className="flex-1 rounded-full px-4"
-          />
-          <Button
-            type="submit"
-            size="icon"
-            disabled={!input.trim() || isLoading}
-            className="rounded-full bg-[#1F1F1F] hover:bg-[#1F1F1F]/80 text-white"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0l-7 7m7-7l7 7" />
-            </svg>
-          </Button>
-        </form>
       </div>
 
-      {/* ── Right panel: canvas ── */}
+      {/* ── Right: Canvas (generative UI output) ── */}
       <div className="flex-1 overflow-y-auto bg-muted/30">
         {activeComponent ? (
           <div className="p-8">
+            {/* Transparency note */}
+            <div className="mb-5 flex items-center gap-2 text-[11px] text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#6686F7]" />
+              Canvas rendered this component from{" "}
+              <span className="font-medium text-foreground/70">
+                {persona === "agent" ? "Sarah's" : "James'"} role
+              </span>{" "}
+              and open customer context
+              <span className="mx-1 text-muted-foreground/40">·</span>
+              <span className="text-[#6686F7]">Powered by Claude</span>
+            </div>
             <ToolResult toolName={activeComponent.toolName} result={activeComponent.result} />
+          </div>
+        ) : isLoading ? (
+          <div className="flex flex-col items-center justify-center h-full gap-3">
+            <div className="flex gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#6686F7] animate-bounce" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#6686F7] animate-bounce [animation-delay:0.15s]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#6686F7] animate-bounce [animation-delay:0.3s]" />
+            </div>
+            <p className="text-sm text-muted-foreground">Canvas is generating UI…</p>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-8">
@@ -392,16 +482,20 @@ export default function ChatPage() {
               </svg>
             </div>
             <div>
-              <p className="text-sm font-medium text-foreground/50">Canvas is ready</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Send a message to generate a UI component
+              <p className="text-sm font-medium text-foreground/50">
+                {persona ? "Select an action to generate UI" : "Sign in to begin"}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1 max-w-xs">
+                {persona
+                  ? "Canvas will render the right component for your role and the open customer record"
+                  : "Canvas adapts to who you are — select a persona from the left panel to simulate the platform context"}
               </p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Audit panel (floating) */}
+      {/* Floating audit panel */}
       <AuditPanel entries={auditEntries} />
     </div>
   );
