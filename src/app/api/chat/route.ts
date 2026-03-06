@@ -68,7 +68,16 @@ export async function POST(request: Request) {
             guardrailTriggered: false,
           });
 
-          return customer;
+          return {
+            ...customer,
+            _audit: {
+              persona: "system",
+              action: "Fetched customer data",
+              toolCalled: "fetch_customer",
+              customerId: customer.id,
+              guardrailTriggered: false,
+            },
+          };
         },
       }),
 
@@ -96,6 +105,14 @@ export async function POST(request: Request) {
 
           return {
             component: "AddressForm",
+            _audit: {
+              persona: "Sarah",
+              action: "Rendered address form",
+              toolCalled: "render_address_form",
+              customerId: customer.id,
+              guardrailTriggered: false,
+              detail: street ? `Pre-filled: ${street}` : "No pre-fill",
+            },
             props: {
               customerName: customer.identity.preferredName,
               customerId: customer.id,
@@ -145,7 +162,16 @@ export async function POST(request: Request) {
               customerId: customer.id,
               guardrailTriggered: false,
             });
-            return { error: "No pending address changes for this customer." };
+            return {
+              error: "No pending address changes for this customer.",
+              _audit: {
+                persona: "James",
+                action: "No pending changes found",
+                toolCalled: "render_approval_view",
+                customerId: customer.id,
+                guardrailTriggered: false,
+              },
+            };
           }
 
           logAudit({
@@ -158,6 +184,13 @@ export async function POST(request: Request) {
 
           return {
             component: "ApprovalView",
+            _audit: {
+              persona: "James",
+              action: "Rendered approval view",
+              toolCalled: "render_approval_view",
+              customerId: customer.id,
+              guardrailTriggered: false,
+            },
             props: {
               customerName: customer.identity.preferredName,
               customerId: customer.id,

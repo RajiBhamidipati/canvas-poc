@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { AddressForm } from "@/components/address-form";
 import { ApprovalView } from "@/components/approval-view";
 import { AuditPanel } from "@/components/audit-panel";
-import { useRef, useEffect } from "react";
+import type { AuditEntry } from "@/components/audit-panel";
+import { useRef, useEffect, useMemo } from "react";
 
 // Map tool result component names to actual React components
 function ToolResult({ toolName, result }: { toolName: string; result: Record<string, unknown> }) {
@@ -181,6 +182,31 @@ export default function ChatPage() {
     }
   }, [messages]);
 
+  // Extract audit entries from tool invocation results (client-side)
+  const auditEntries: AuditEntry[] = useMemo(() => {
+    const entries: AuditEntry[] = [];
+    for (const message of messages) {
+      if (message.toolInvocations) {
+        for (const invocation of message.toolInvocations) {
+          if (invocation.state === "result" && invocation.result?._audit) {
+            const a = invocation.result._audit as Record<string, unknown>;
+            entries.push({
+              id: invocation.toolCallId,
+              timestamp: new Date().toISOString(),
+              persona: String(a.persona || "unknown"),
+              action: String(a.action || ""),
+              toolCalled: String(a.toolCalled || invocation.toolName),
+              customerId: String(a.customerId || ""),
+              guardrailTriggered: Boolean(a.guardrailTriggered),
+              detail: a.detail ? String(a.detail) : undefined,
+            });
+          }
+        }
+      }
+    }
+    return entries;
+  }, [messages]);
+
   const quickPrompts = [
     { label: "Agent: Live address change", text: "I'm Sarah, a call centre agent. I'm on a call — the customer has moved to 221B Baker Street, London, NW1 6XE." },
     { label: "Manager: Review pending task", text: "I'm James, a case manager. I have a pending task to review an address change for CUST-123." },
@@ -312,8 +338,8 @@ export default function ChatPage() {
         </Button>
       </form>
 
-      {/* Audit panel (floating) */}
-      <AuditPanel />
+      {/* Audit panel (floating) — client-side, derived from tool invocations */}
+      <AuditPanel entries={auditEntries} />
     </div>
   );
 }

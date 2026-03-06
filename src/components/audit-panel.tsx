@@ -1,32 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { AuditEntry } from "@/lib/audit";
 
-export function AuditPanel() {
-  const [entries, setEntries] = useState<AuditEntry[]>([]);
+export interface AuditEntry {
+  id: string;
+  timestamp: string;
+  persona: string;
+  action: string;
+  toolCalled: string;
+  customerId: string;
+  guardrailTriggered: boolean;
+  detail?: string;
+}
+
+interface AuditPanelProps {
+  entries: AuditEntry[];
+}
+
+export function AuditPanel({ entries }: AuditPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
-
-  // Poll audit log every 2 seconds
-  useEffect(() => {
-    const poll = async () => {
-      try {
-        const res = await fetch("/api/audit");
-        if (res.ok) {
-          const data = await res.json();
-          setEntries(data);
-        }
-      } catch {
-        // Silently fail
-      }
-    };
-
-    poll();
-    const interval = setInterval(poll, 2000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
