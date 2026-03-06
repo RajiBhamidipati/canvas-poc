@@ -21,11 +21,12 @@ Canvas is a **generative UI proof of concept** — the LLM dynamically selects a
 
 ### Request Flow
 
-1. User sends a chat message via the `useChat` hook (Vercel AI SDK) in [src/app/page.tsx](src/app/page.tsx)
+1. User selects a persona (Sarah/James) and clicks an action button in the platform shell ([src/app/page.tsx](src/app/page.tsx)) — there is no chat input; context is constructed programmatically via `append()`
 2. `POST /api/chat` ([src/app/api/chat/route.ts](src/app/api/chat/route.ts)) calls `streamText()` with Claude Sonnet and a system prompt defining persona detection logic and guardrails
 3. Claude calls tools in sequence: always `fetch_customer` first, then a persona-gated render tool
 4. Tool results include a `component` field (`"AddressForm"` or `"ApprovalView"`) and a `props` object — all values are strings (including booleans and numbers)
 5. The client-side `ToolResult` component in [src/app/page.tsx](src/app/page.tsx) maps the component name to the actual React component and spreads the props
+6. When James makes a decision in `ApprovalView`, an `onDecision` callback fires up through `ToolResult` to `page.tsx`, updating the task queue item in the sidebar
 
 ### The 3 Claude Tools (all in the chat route)
 
@@ -60,7 +61,7 @@ Every tool execution calls `logAudit()` from [src/lib/audit.ts](src/lib/audit.ts
 
 | Route | File | Description |
 |-------|------|-------------|
-| `/` | `src/app/page.tsx` | Chat interface + generative UI renderer |
+| `/` | `src/app/page.tsx` | Platform shell: persona selector, customer context, action triggers, canvas |
 | `/design-system` | `src/app/design-system/page.tsx` | Component library showcase |
 | `POST /api/chat` | `src/app/api/chat/route.ts` | Claude integration with 3 tools |
 | `POST /api/chat/submit` | `src/app/api/chat/submit/route.ts` | Address submission (approve/reject/update) |

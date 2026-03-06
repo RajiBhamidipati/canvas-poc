@@ -341,7 +341,9 @@ The `/design-system` route provides a visual component library with 12 sections:
 
 ## Roadmap
 
-Future iterations could explore: multi-customer selection (agent picks from a search), real PAF/Experian API integration, WebSocket-based live updates between agent and manager views, persistent database with Prisma ORM, role-based authentication, and additional servicing journeys beyond address changes.
+A detailed platform build roadmap is documented in `CANVAS-PLATFORM-VISION.md` (internal, not tracked in this repository). It covers the four delivery phases, architecture at scale (component registry, modular system prompt, BFF data layer, persistent audit trail), EU AI Act obligations, GDPR/FCA/PRA requirements, LLM security threats, and a decisions register for immediate action.
+
+Near-term POC iterations could explore: multi-customer selection (agent picks from a search), real PAF/Experian API integration, WebSocket-based live updates between agent and manager views, and additional servicing journeys beyond address changes.
 
 ---
 
