@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Finova brand palette */
+    --background: 0 0% 97%;           /* #F7F7F7 - light grey canvas */
+    --foreground: 0 0% 12%;           /* #1F1F1F - near-black */
+    --card: 0 0% 100%;                /* #FFFFFF - white cards */
+    --card-foreground: 0 0% 12%;      /* #1F1F1F */
+    --primary: 72 65% 84%;            /* #ECF3B7 - Finova lime-green */
+    --primary-foreground: 0 0% 12%;   /* #1F1F1F - dark text on lime */
+    --secondary: 228 90% 69%;         /* #6686F7 - Finova blue */
+    --secondary-foreground: 0 0% 100%; /* white text on blue */
+    --muted: 0 0% 96%;                /* #F5F5F5 */
+    --muted-foreground: 0 0% 45%;     /* #737373 */
+    --accent: 266 47% 95%;            /* #F3EBFA - Finova soft purple */
+    --accent-foreground: 0 0% 12%;
+    --destructive: 0 65% 57%;         /* red for errors */
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 87%;               /* #DDDDDD */
+    --input: 0 0% 87%;
+    --ring: 228 90% 69%;              /* blue focus ring */
+    --radius: 0.75rem;                /* rounded corners */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Urbanist', Arial, sans-serif;
+  }
+}
+
+/* Finova-style pill buttons */
+@layer components {
+  .btn-finova {
+    @apply rounded-full px-6 py-2.5 font-medium transition-colors;
+  }
+}

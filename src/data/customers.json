@@ -1,0 +1,428 @@
+[
+  {
+    "id": "CUST-123",
+    "name": "Sarah Miller",
+    "tier": "Premier",
+    "status": "Active",
+    "identity": {
+      "legalName": "Sarah Jane Miller",
+      "preferredName": "Sarah Miller",
+      "dateOfBirth": "1988-04-15",
+      "gender": "Female",
+      "nationality": "British",
+      "taxId": "****5678",
+      "kycStatus": "verified",
+      "kycLastChecked": "2025-11-20"
+    },
+    "contact": {
+      "currentAddress": { "street": "10 Downing Street", "city": "London", "postcode": "SW1A 2AA" },
+      "correspondenceAddress": null,
+      "phoneMobile": "07*** ***890",
+      "phoneLandline": "020 **** 1234",
+      "email": "s.miller@email.co.uk",
+      "preferredChannel": "email",
+      "marketingConsent": true,
+      "digitalStatements": true
+    },
+    "relationship": {
+      "customerType": "joint",
+      "linkedAccountIds": ["ACC-4401", "ACC-4402", "ACC-4403", "MORT-1120"],
+      "householdGroupId": "HH-890",
+      "relationshipManager": { "name": "David Chen", "employeeId": "EMP-2045", "branch": "Canary Wharf" },
+      "isJointAccount": true,
+      "jointHolders": [
+        { "name": "Sarah Miller", "id": "CUST-123" },
+        { "name": "Thomas Miller", "id": "CUST-124" }
+      ]
+    },
+    "compliance": {
+      "amlFlag": "clear",
+      "amlLastScreened": "2026-01-15",
+      "riskRating": "low",
+      "sanctionsStatus": "clear",
+      "sanctionsLastScreened": "2026-01-15",
+      "pepStatus": false,
+      "consentPrivacy": true,
+      "dataRetentionPolicy": "7-year standard"
+    },
+    "financial": {
+      "annualIncome": "£75,000 – £100,000",
+      "creditScore": 742,
+      "creditScoreProvider": "Experian",
+      "occupation": "Senior Software Engineer",
+      "employerName": "TechCo Ltd",
+      "sourceOfFunds": "Employment income",
+      "sourceOfWealth": "Salary and property"
+    },
+    "products": [
+      { "productType": "current-account", "accountNumber": "****4401", "sortCode": "20-45-12", "balance": "£3,240.50", "status": "active" },
+      { "productType": "savings", "accountNumber": "****4402", "sortCode": "20-45-12", "balance": "£28,500.00", "status": "active" },
+      { "productType": "isa", "accountNumber": "****4403", "sortCode": "20-45-12", "balance": "£15,200.00", "status": "active", "linkedTo": "****4401" },
+      { "productType": "mortgage", "accountNumber": "****1120", "sortCode": "20-45-12", "balance": "£185,400.00", "status": "active" }
+    ],
+    "behaviour": {
+      "segment": "retail",
+      "primaryChannel": "mobile",
+      "lastLoginChannel": "Mobile App (iOS)",
+      "lastLoginDate": "2026-03-06T08:22:00Z",
+      "monthlyTransactions": 47,
+      "averageBalance": "£4,120",
+      "lastBranchVisit": "2025-09-14",
+      "customerSince": "2014-06-01"
+    },
+    "security": {
+      "authMethod": "biometric",
+      "lastPasswordChange": "2025-08-10",
+      "failedLoginAttempts": 0,
+      "fraudFlag": "clear",
+      "fraudAlertDetail": null,
+      "deviceRegistered": true,
+      "lastSecurityReview": "2025-12-01"
+    },
+    "pendingChange": {
+      "street": "221B Baker Street",
+      "city": "London",
+      "postcode": "NW1 6XE",
+      "submittedBy": "Sarah",
+      "submittedAt": "2026-03-05T14:30:00Z",
+      "reason": "Customer moved house",
+      "origin": "call-centre",
+      "taskId": "T862-00451",
+      "experianScore": 8
+    }
+  },
+  {
+    "id": "CUST-456",
+    "name": "Ahmed Hassan",
+    "tier": "Business",
+    "status": "Active",
+    "identity": {
+      "legalName": "Ahmed Ibrahim Hassan",
+      "preferredName": "Ahmed Hassan",
+      "dateOfBirth": "1975-09-22",
+      "gender": "Male",
+      "nationality": "British",
+      "taxId": "****3421",
+      "kycStatus": "verified",
+      "kycLastChecked": "2025-08-10"
+    },
+    "contact": {
+      "currentAddress": { "street": "45 Commercial Road", "city": "Birmingham", "postcode": "B1 1RS" },
+      "correspondenceAddress": { "street": "Unit 12, Enterprise Park", "city": "Birmingham", "postcode": "B5 7DB" },
+      "phoneMobile": "07*** ***456",
+      "phoneLandline": "0121 **** 5678",
+      "email": "a.hassan@hassangroup.co.uk",
+      "preferredChannel": "phone",
+      "marketingConsent": false,
+      "digitalStatements": true
+    },
+    "relationship": {
+      "customerType": "corporate",
+      "linkedAccountIds": ["BUS-7701", "BUS-7702", "LOAN-3301"],
+      "householdGroupId": null,
+      "relationshipManager": { "name": "Rebecca Thomas", "employeeId": "EMP-3098", "branch": "Birmingham City" },
+      "isJointAccount": false,
+      "jointHolders": []
+    },
+    "compliance": {
+      "amlFlag": "clear",
+      "amlLastScreened": "2025-12-20",
+      "riskRating": "medium",
+      "sanctionsStatus": "clear",
+      "sanctionsLastScreened": "2025-12-20",
+      "pepStatus": false,
+      "consentPrivacy": true,
+      "dataRetentionPolicy": "10-year corporate"
+    },
+    "financial": {
+      "annualIncome": "£250,000 – £500,000",
+      "creditScore": 698,
+      "creditScoreProvider": "Experian",
+      "occupation": "Managing Director",
+      "employerName": "Hassan Import/Export Group",
+      "sourceOfFunds": "Business revenue",
+      "sourceOfWealth": "Business ownership"
+    },
+    "products": [
+      { "productType": "current-account", "accountNumber": "****7701", "sortCode": "20-45-30", "balance": "£45,670.00", "status": "active" },
+      { "productType": "current-account", "accountNumber": "****7702", "sortCode": "20-45-30", "balance": "£12,340.00", "status": "active" },
+      { "productType": "loan", "accountNumber": "****3301", "sortCode": "20-45-30", "balance": "£78,000.00", "status": "active" }
+    ],
+    "behaviour": {
+      "segment": "sme",
+      "primaryChannel": "online",
+      "lastLoginChannel": "Web Browser (Chrome)",
+      "lastLoginDate": "2026-03-05T16:45:00Z",
+      "monthlyTransactions": 156,
+      "averageBalance": "£38,400",
+      "lastBranchVisit": "2026-02-10",
+      "customerSince": "2010-03-15"
+    },
+    "security": {
+      "authMethod": "2fa",
+      "lastPasswordChange": "2026-01-05",
+      "failedLoginAttempts": 0,
+      "fraudFlag": "clear",
+      "fraudAlertDetail": null,
+      "deviceRegistered": true,
+      "lastSecurityReview": "2025-11-15"
+    },
+    "pendingChange": {
+      "street": "100 Broad Street",
+      "city": "Birmingham",
+      "postcode": "B15 1AE",
+      "submittedBy": "Ahmed (eBanking)",
+      "submittedAt": "2026-03-04T10:15:00Z",
+      "reason": "Business relocated",
+      "origin": "ebanking",
+      "taskId": "T862-00467",
+      "experianScore": 7
+    }
+  },
+  {
+    "id": "CUST-789",
+    "name": "Yuki Tanaka",
+    "tier": "Premier",
+    "status": "Active",
+    "identity": {
+      "legalName": "Yuki Tanaka",
+      "preferredName": "Yuki Tanaka",
+      "dateOfBirth": "1970-01-08",
+      "gender": "Female",
+      "nationality": "Japanese",
+      "taxId": "****9012",
+      "kycStatus": "verified",
+      "kycLastChecked": "2026-02-01"
+    },
+    "contact": {
+      "currentAddress": { "street": "1 Knightsbridge", "city": "London", "postcode": "SW1X 7LY" },
+      "correspondenceAddress": null,
+      "phoneMobile": "07*** ***789",
+      "phoneLandline": null,
+      "email": "y.tanaka@private-email.com",
+      "preferredChannel": "email",
+      "marketingConsent": false,
+      "digitalStatements": true
+    },
+    "relationship": {
+      "customerType": "individual",
+      "linkedAccountIds": ["ACC-9901", "ACC-9902", "ISA-9903", "MORT-9904", "CC-9905"],
+      "householdGroupId": null,
+      "relationshipManager": { "name": "Oliver Wright", "employeeId": "EMP-1012", "branch": "Mayfair" },
+      "isJointAccount": false,
+      "jointHolders": []
+    },
+    "compliance": {
+      "amlFlag": "review",
+      "amlLastScreened": "2026-02-01",
+      "riskRating": "high",
+      "sanctionsStatus": "clear",
+      "sanctionsLastScreened": "2026-02-01",
+      "pepStatus": true,
+      "consentPrivacy": true,
+      "dataRetentionPolicy": "15-year enhanced"
+    },
+    "financial": {
+      "annualIncome": "£500,000+",
+      "creditScore": 810,
+      "creditScoreProvider": "Experian",
+      "occupation": "Diplomat (retired)",
+      "employerName": "N/A",
+      "sourceOfFunds": "Investment income and pension",
+      "sourceOfWealth": "Career earnings and investments"
+    },
+    "products": [
+      { "productType": "current-account", "accountNumber": "****9901", "sortCode": "20-45-01", "balance": "£125,800.00", "status": "active" },
+      { "productType": "savings", "accountNumber": "****9902", "sortCode": "20-45-01", "balance": "£450,000.00", "status": "active" },
+      { "productType": "isa", "accountNumber": "****9903", "sortCode": "20-45-01", "balance": "£20,000.00", "status": "active" },
+      { "productType": "mortgage", "accountNumber": "****9904", "sortCode": "20-45-01", "balance": "£520,000.00", "status": "active" },
+      { "productType": "credit-card", "accountNumber": "****9905", "sortCode": "20-45-01", "balance": "£2,340.00", "status": "active" }
+    ],
+    "behaviour": {
+      "segment": "private-banking",
+      "primaryChannel": "telephone",
+      "lastLoginChannel": "Mobile App (iOS)",
+      "lastLoginDate": "2026-03-04T11:00:00Z",
+      "monthlyTransactions": 23,
+      "averageBalance": "£142,000",
+      "lastBranchVisit": "2026-01-20",
+      "customerSince": "2008-11-01"
+    },
+    "security": {
+      "authMethod": "biometric",
+      "lastPasswordChange": "2026-02-15",
+      "failedLoginAttempts": 0,
+      "fraudFlag": "clear",
+      "fraudAlertDetail": null,
+      "deviceRegistered": true,
+      "lastSecurityReview": "2026-01-10"
+    },
+    "pendingChange": null
+  },
+  {
+    "id": "CUST-012",
+    "name": "James Wilson",
+    "tier": "Standard",
+    "status": "Active",
+    "identity": {
+      "legalName": "James Robert Wilson",
+      "preferredName": "James Wilson",
+      "dateOfBirth": "1995-07-30",
+      "gender": "Male",
+      "nationality": "British",
+      "taxId": "****7890",
+      "kycStatus": "expired",
+      "kycLastChecked": "2023-06-15"
+    },
+    "contact": {
+      "currentAddress": { "street": "82 Oxford Road", "city": "Manchester", "postcode": "M1 5NH" },
+      "correspondenceAddress": null,
+      "phoneMobile": "07*** ***012",
+      "phoneLandline": null,
+      "email": "jwilson95@gmail.com",
+      "preferredChannel": "sms",
+      "marketingConsent": true,
+      "digitalStatements": false
+    },
+    "relationship": {
+      "customerType": "individual",
+      "linkedAccountIds": ["ACC-0101", "SAV-0102"],
+      "householdGroupId": null,
+      "relationshipManager": null,
+      "isJointAccount": false,
+      "jointHolders": []
+    },
+    "compliance": {
+      "amlFlag": "clear",
+      "amlLastScreened": "2023-06-15",
+      "riskRating": "low",
+      "sanctionsStatus": "clear",
+      "sanctionsLastScreened": "2023-06-15",
+      "pepStatus": false,
+      "consentPrivacy": true,
+      "dataRetentionPolicy": "7-year standard"
+    },
+    "financial": {
+      "annualIncome": "£25,000 – £35,000",
+      "creditScore": 612,
+      "creditScoreProvider": "Experian",
+      "occupation": "Barista",
+      "employerName": "Costa Coffee",
+      "sourceOfFunds": "Employment income",
+      "sourceOfWealth": "Salary"
+    },
+    "products": [
+      { "productType": "current-account", "accountNumber": "****0101", "sortCode": "20-45-44", "balance": "£340.20", "status": "active" },
+      { "productType": "savings", "accountNumber": "****0102", "sortCode": "20-45-44", "balance": "£1,200.00", "status": "dormant" }
+    ],
+    "behaviour": {
+      "segment": "retail",
+      "primaryChannel": "mobile",
+      "lastLoginChannel": "Mobile App (Android)",
+      "lastLoginDate": "2026-02-28T19:30:00Z",
+      "monthlyTransactions": 12,
+      "averageBalance": "£280",
+      "lastBranchVisit": null,
+      "customerSince": "2018-09-01"
+    },
+    "security": {
+      "authMethod": "password",
+      "lastPasswordChange": "2024-03-20",
+      "failedLoginAttempts": 1,
+      "fraudFlag": "clear",
+      "fraudAlertDetail": null,
+      "deviceRegistered": true,
+      "lastSecurityReview": "2023-06-15"
+    },
+    "pendingChange": null
+  },
+  {
+    "id": "CUST-345",
+    "name": "Lisa Rodriguez",
+    "tier": "Standard",
+    "status": "Active",
+    "identity": {
+      "legalName": "Lisa Maria Rodriguez",
+      "preferredName": "Lisa Rodriguez",
+      "dateOfBirth": "1982-12-03",
+      "gender": "Female",
+      "nationality": "British",
+      "taxId": "****2345",
+      "kycStatus": "verified",
+      "kycLastChecked": "2025-10-05"
+    },
+    "contact": {
+      "currentAddress": { "street": "17 King Street", "city": "Leeds", "postcode": "LS1 2HN" },
+      "correspondenceAddress": null,
+      "phoneMobile": "07*** ***345",
+      "phoneLandline": "0113 **** 9876",
+      "email": "lisa.r@outlook.co.uk",
+      "preferredChannel": "post",
+      "marketingConsent": false,
+      "digitalStatements": false
+    },
+    "relationship": {
+      "customerType": "individual",
+      "linkedAccountIds": ["ACC-3451", "CC-3452", "LOAN-3453", "OD-3454"],
+      "householdGroupId": "HH-445",
+      "relationshipManager": null,
+      "isJointAccount": false,
+      "jointHolders": []
+    },
+    "compliance": {
+      "amlFlag": "alert",
+      "amlLastScreened": "2026-02-28",
+      "riskRating": "high",
+      "sanctionsStatus": "clear",
+      "sanctionsLastScreened": "2026-02-28",
+      "pepStatus": false,
+      "consentPrivacy": true,
+      "dataRetentionPolicy": "7-year standard"
+    },
+    "financial": {
+      "annualIncome": "£35,000 – £50,000",
+      "creditScore": 520,
+      "creditScoreProvider": "Experian",
+      "occupation": "Retail Manager",
+      "employerName": "Debenhams",
+      "sourceOfFunds": "Employment income",
+      "sourceOfWealth": "Salary"
+    },
+    "products": [
+      { "productType": "current-account", "accountNumber": "****3451", "sortCode": "20-45-55", "balance": "-£120.00", "status": "active" },
+      { "productType": "credit-card", "accountNumber": "****3452", "sortCode": "20-45-55", "balance": "£4,800.00", "status": "arrears" },
+      { "productType": "loan", "accountNumber": "****3453", "sortCode": "20-45-55", "balance": "£12,500.00", "status": "arrears" },
+      { "productType": "overdraft", "accountNumber": "****3454", "sortCode": "20-45-55", "balance": "£500.00", "status": "active", "linkedTo": "****3451" }
+    ],
+    "behaviour": {
+      "segment": "retail",
+      "primaryChannel": "branch",
+      "lastLoginChannel": "Web Browser (Firefox)",
+      "lastLoginDate": "2026-02-15T14:10:00Z",
+      "monthlyTransactions": 8,
+      "averageBalance": "-£45",
+      "lastBranchVisit": "2026-02-20",
+      "customerSince": "2016-04-01"
+    },
+    "security": {
+      "authMethod": "password",
+      "lastPasswordChange": "2025-05-01",
+      "failedLoginAttempts": 3,
+      "fraudFlag": "under-review",
+      "fraudAlertDetail": "Unusual transaction pattern detected — 4 ATM withdrawals in 2 hours across different cities on 2026-02-25",
+      "deviceRegistered": false,
+      "lastSecurityReview": "2025-10-05"
+    },
+    "pendingChange": {
+      "street": "42 Park Lane",
+      "city": "Leeds",
+      "postcode": "LS3 1AB",
+      "submittedBy": "Branch Staff (Leeds)",
+      "submittedAt": "2026-03-01T11:00:00Z",
+      "reason": "Returned mail / gone away",
+      "origin": "branch",
+      "taskId": "T862-00489",
+      "experianScore": 4
+    }
+  }
+]
