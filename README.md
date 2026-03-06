@@ -313,20 +313,6 @@ Visit [http://localhost:3000/design-system](http://localhost:3000/design-system)
 
 The `/design-system` route provides a visual component library with 12 sections: Brand, Typography, Colours, Buttons, Cards, Forms, Badges, Tables, Tabs, Dialogs, Tooltips, and Avatars. All components use the custom brand theme defined in `globals.css` with the Urbanist typeface and a lime/blue/purple accent palette.
 
----
-
-## Deployment
-
-### Vercel (recommended)
-
-1. Push to GitHub
-2. Import the repo at [vercel.com/new](https://vercel.com/new)
-3. Set `ANTHROPIC_API_KEY` as an environment variable
-4. Deploy — zero configuration needed for Next.js
-
-**Note:** The POC uses a JSON file data store. In a serverless environment, data reloads from the seed file on each cold start. For persistent storage, swap to a hosted database (e.g. Supabase Postgres) with a one-line change in the data access layer.
-
----
 
 ## Roadmap
 
