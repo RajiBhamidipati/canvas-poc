@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
 interface ApprovalViewProps {
+  onDecision?: (decision: "approved" | "amended" | "rejected") => void;
   customerName: string;
   customerId: string;
   tier: string;
@@ -99,6 +100,7 @@ export function ApprovalView({
   failedLoginAttempts,
   primaryChannel,
   monthlyTransactions,
+  onDecision,
 }: ApprovalViewProps) {
   const expScore = parseInt(experianScore || "0");
   const expPass = expScore > 5;
@@ -141,6 +143,7 @@ export function ApprovalView({
         body: JSON.stringify(payload),
       });
       setDecision(action);
+      onDecision?.(action);
     } catch {
       // Silently fail for POC
     }

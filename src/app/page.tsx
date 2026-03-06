@@ -10,7 +10,7 @@ import type { AuditEntry } from "@/components/audit-panel";
 import { useMemo, useState } from "react";
 
 // Map tool result component names to actual React components
-function ToolResult({ toolName: _toolName, result }: { toolName: string; result: Record<string, unknown> }) {
+function ToolResult({ toolName: _toolName, result, onDecision }: { toolName: string; result: Record<string, unknown>; onDecision?: (d: "approved" | "amended" | "rejected") => void }) {
   if (result.error) {
     return (
       <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-800">
@@ -55,6 +55,7 @@ function ToolResult({ toolName: _toolName, result }: { toolName: string; result:
     const p = result.props as Record<string, string>;
     return (
       <ApprovalView
+        onDecision={onDecision}
         customerName={p.customerName}
         customerId={p.customerId}
         tier={p.tier}
@@ -106,6 +107,7 @@ export default function PlatformPage() {
   const [newStreet, setNewStreet] = useState("");
   const [newCity, setNewCity] = useState("");
   const [newPostcode, setNewPostcode] = useState("");
+  const [taskDecision, setTaskDecision] = useState<"approved" | "amended" | "rejected" | null>(null);
 
   const { messages, append, isLoading, setMessages } = useChat({
     api: "/api/chat",
@@ -170,11 +172,13 @@ export default function PlatformPage() {
     setNewStreet("");
     setNewCity("");
     setNewPostcode("");
+    setTaskDecision(null);
   };
 
   const handleReset = () => {
     setPersona(null);
     setMessages([]);
+    setTaskDecision(null);
   };
 
   const fireAgentAction = () => {
@@ -392,25 +396,39 @@ export default function PlatformPage() {
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
                     Task Queue
                   </p>
-                  <div className="rounded-xl border p-3 space-y-2 bg-muted/20">
+                  <div className={`rounded-xl border p-3 space-y-2 ${taskDecision ? "bg-muted/10 opacity-60" : "bg-muted/20"}`}>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium">Address Change — Review Required</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-medium">
-                        Pending
+                      <span className={`text-xs font-medium ${taskDecision ? "line-through text-muted-foreground" : ""}`}>
+                        Address Change — Review Required
                       </span>
+                      {taskDecision ? (
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium border ${
+                          taskDecision === "approved" || taskDecision === "amended"
+                            ? "bg-green-50 text-green-700 border-green-200"
+                            : "bg-red-50 text-red-700 border-red-200"
+                        }`}>
+                          {taskDecision.charAt(0).toUpperCase() + taskDecision.slice(1)}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-medium">
+                          Pending
+                        </span>
+                      )}
                     </div>
                     <p className="text-xs text-muted-foreground">CUST-123 · Submitted by Sarah Chen</p>
                     <p className="text-xs text-muted-foreground">
                       14 Primrose Hill → 221B Baker Street, NW1 6XE
                     </p>
                   </div>
-                  <Button
-                    onClick={fireManagerAction}
-                    disabled={isLoading}
-                    className="w-full bg-[#1F1F1F] hover:bg-[#1F1F1F]/80 text-white text-xs"
-                  >
-                    {isLoading ? "Loading…" : "Review Pending Change"}
-                  </Button>
+                  {!taskDecision && (
+                    <Button
+                      onClick={fireManagerAction}
+                      disabled={isLoading}
+                      className="w-full bg-[#1F1F1F] hover:bg-[#1F1F1F]/80 text-white text-xs"
+                    >
+                      {isLoading ? "Loading…" : "Review Pending Change"}
+                    </Button>
+                  )}
                 </div>
               )}
 
@@ -463,7 +481,7 @@ export default function PlatformPage() {
               <span className="mx-1 text-muted-foreground/40">·</span>
               <span className="text-[#6686F7]">Powered by Claude</span>
             </div>
-            <ToolResult toolName={activeComponent.toolName} result={activeComponent.result} />
+            <ToolResult toolName={activeComponent.toolName} result={activeComponent.result} onDecision={setTaskDecision} />
           </div>
         ) : isLoading ? (
           <div className="flex flex-col items-center justify-center h-full gap-3">
