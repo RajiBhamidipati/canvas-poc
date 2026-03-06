@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Canvas — Finova Generative UI POC",
+  title: "Canvas — Generative UI POC",
   description: "AI-driven address servicing with context-aware, persona-adaptive UI",
 };
 

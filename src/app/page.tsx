@@ -189,12 +189,11 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col h-screen max-w-2xl mx-auto">
-      {/* Finova-branded header */}
+      {/* Branded header */}
       <header className="bg-[#1F1F1F] text-white px-5 py-3 flex-shrink-0 flex items-center justify-between">
         <div>
           <h1 className="text-lg font-bold tracking-tight">
-            <span className="text-[#ECF3B7]">F</span>INOVA
-            <span className="text-xs font-normal text-white/60 ml-2">Canvas</span>
+            <span className="text-[#ECF3B7]">Canvas</span>
           </h1>
           <p className="text-[10px] text-white/40">
             Generative UI &middot; Address Servicing POC

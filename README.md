@@ -1,4 +1,4 @@
-# Finova Canvas — Generative UI POC
+# Canvas — Generative UI POC
 
 An AI-driven address servicing proof of concept demonstrating **context-aware, persona-adaptive UI** powered by Claude and the Vercel AI SDK.
 
@@ -23,7 +23,7 @@ Canvas detects *who* the user is and *what* they want to do, then dynamically re
 - **Next.js 14** (App Router)
 - **Vercel AI SDK** (`streamText` + tool calling with `maxSteps`)
 - **@ai-sdk/anthropic** (Claude Sonnet)
-- **Shadcn/UI** + Tailwind CSS (Finova brand theme)
+- **Shadcn/UI** + Tailwind CSS (custom brand theme)
 - **TypeScript** (strict mode)
 
 ## Getting started
@@ -81,4 +81,4 @@ Deploy to Vercel:
 
 ## Licence
 
-Internal POC — Finova Tech
+Internal POC

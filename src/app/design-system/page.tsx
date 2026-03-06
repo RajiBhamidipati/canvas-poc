@@ -34,9 +34,9 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 
-// Finova colour palette
+// Brand colour palette
 const COLOURS = [
-  { name: "Finova Dark", hex: "#1F1F1F", css: "--foreground", usage: "Headers, text, primary buttons" },
+  { name: "Dark", hex: "#1F1F1F", css: "--foreground", usage: "Headers, text, primary buttons" },
   { name: "Lime Accent", hex: "#ECF3B7", css: "--primary", usage: "Brand highlight, CTAs, hover states" },
   { name: "Blue", hex: "#6686F7", css: "--secondary", usage: "Links, active states, info badges" },
   { name: "Soft Purple", hex: "#F3EBFA", css: "--accent", usage: "Card backgrounds, subtle highlights" },
@@ -81,7 +81,7 @@ export default function DesignSystemPage() {
         <header className="sticky top-0 z-50 bg-[#1F1F1F] text-white px-6 py-3 flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold tracking-tight">
-              <span className="text-[#ECF3B7]">F</span>INOVA
+              <span className="text-[#ECF3B7]">Canvas</span>
               <span className="text-xs font-normal text-white/60 ml-2">Design System</span>
             </h1>
             <p className="text-[10px] text-white/40">
@@ -120,13 +120,13 @@ export default function DesignSystemPage() {
           <main className="flex-1 max-w-4xl mx-auto px-6 pb-20">
 
             {/* ── BRAND ── */}
-            <SectionHeading id="brand" title="Brand" description="Finova brand identity and visual language." />
+            <SectionHeading id="brand" title="Brand" description="Brand identity and visual language." />
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <div className="flex items-center gap-4">
                   <div className="bg-[#1F1F1F] text-white px-6 py-3 rounded-2xl">
                     <span className="text-2xl font-bold tracking-tight">
-                      <span className="text-[#ECF3B7]">F</span>INOVA
+                      <span className="text-[#ECF3B7]">Canvas</span>
                     </span>
                   </div>
                   <div className="text-sm text-muted-foreground">
@@ -159,7 +159,7 @@ export default function DesignSystemPage() {
             </Card>
 
             {/* ── COLOURS ── */}
-            <SectionHeading id="colours" title="Colours" description="Finova brand palette with semantic colour tokens." />
+            <SectionHeading id="colours" title="Colours" description="Brand palette with semantic colour tokens." />
             <div className="grid grid-cols-3 gap-3">
               {COLOURS.map((colour) => (
                 <div key={colour.hex} className="rounded-lg border overflow-hidden">
@@ -610,7 +610,7 @@ export default function DesignSystemPage() {
             {/* Footer */}
             <div className="text-center text-xs text-muted-foreground space-y-1">
               <p>
-                <span className="font-medium">Finova Canvas</span> Design System &middot; Built with Shadcn/UI + Tailwind CSS
+                <span className="font-medium">Canvas</span> Design System &middot; Built with Shadcn/UI + Tailwind CSS
               </p>
               <p>12 component families &middot; Urbanist typography &middot; 9 colour tokens</p>
             </div>
