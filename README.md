@@ -149,12 +149,34 @@ graph LR
         G1["Maker-checker enforcement"]
         G2["Agents cannot approve"]
         G3["Managers cannot edit"]
+        G4["Experian score threshold"]
+        G5["Address field validation"]
+        G6["Rate limiting"]
     end
 
     Memory --> Knowledge
     Knowledge --> Tools
     Tools --> Guardrails
 ```
+
+---
+
+## Guardrails
+
+Canvas enforces a **defence-in-depth** guardrail model — controls are applied at the LLM prompt layer, the server-side tool execute layer, and the API submission layer independently. A bypass at one layer does not compromise the others.
+
+| ID | Guardrail | Trigger | Enforcement Layer |
+|----|-----------|---------|-------------------|
+| G-01 | Agent cannot approve | Agent calls the approval tool | System prompt + `execute()` check |
+| G-02 | Manager cannot edit addresses | Manager calls the address form tool | System prompt + `execute()` check |
+| G-03 | Customer fetch before render | Render tool called without prior fetch | System prompt instruction |
+| G-04 | Experian score threshold | Approval submitted with score < 5/9 | Submit endpoint (HTTP 422) |
+| G-05 | Address field validation | Invalid postcode or empty required fields | Submit endpoint (HTTP 422) |
+| G-06 | Rate limiting | >20 requests/min per IP | API route (HTTP 429) |
+
+Every guardrail event is logged in the audit trail with `guardrailTriggered: true` and visible in the floating Audit Log panel.
+
+See [GUARDRAILS.md](./GUARDRAILS.md) for the full reference — including enforcement implementation, test prompts, and production hardening recommendations.
 
 ---
 
@@ -261,6 +283,7 @@ canvas-poc/
 │       ├── audit.ts                    # Audit logging utilities
 │       └── utils.ts                    # cn() class merge utility
 ├── public/
+├── GUARDRAILS.md                       # Guardrail inventory, enforcement details, test prompts
 ├── DEMO-SCRIPT.md                      # Stakeholder walkthrough guide
 ├── package.json
 ├── tailwind.config.ts
