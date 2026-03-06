@@ -18,27 +18,27 @@ The core issue is that **traditional UIs are built around pages and workflows, n
 
 ## The Canvas Approach
 
-Canvas flips this model. Instead of routing users to pre-built pages, it detects **who you are** and **what you're trying to do**, then assembles the right interface on the fly.
+Canvas flips this model. Instead of routing users to pre-built pages, it reads **who you are** and **what you're trying to do** from platform context, then assembles the right interface on the fly — no prompt required.
 
 ```
-"Hi, I'm Sarah. Mrs Miller has moved to 42 Oak Lane, Bristol BS1 4QR"
+Sarah logs in as Call Centre Agent → customer record CUST-123 is open → she clicks "Open Address Change Form"
 
-→ Claude detects: Agent persona + address change intent
+→ Canvas reads: Agent identity + address change intent + open customer context
 → Fetches customer data (KYC: verified, risk: low, joint account)
 → Renders: streamlined address form with PAF lookup, pre-filled fields,
   and a collapsible compliance panel — optimised for speed
 ```
 
 ```
-"It's James, I need to review the pending changes in my queue"
+James logs in as Case Manager → pending task appears in his queue → he clicks "Review Pending Change"
 
-→ Claude detects: Manager persona + approval intent
+→ Canvas reads: Manager identity + approval intent + pending task context
 → Fetches customer data + pending change details
 → Renders: governance card with before/after diff, compliance tabs,
   Experian scoring, and approve/amend/reject controls
 ```
 
-Same data. Same API. Completely different experiences — each optimised for the user's actual job.
+Same data. Same API. Completely different experiences — each optimised for the user's actual job. The LLM is invisible infrastructure; it never surfaces as a chatbot.
 
 ---
 
@@ -49,7 +49,7 @@ Same data. Same API. Completely different experiences — each optimised for the
 ```mermaid
 graph TB
     subgraph Client["Browser (Next.js App Router)"]
-        Chat["Chat Interface<br/>useChat hook"]
+        Chat["Platform Shell<br/>Persona selector + action triggers"]
         TR["Tool Result Renderer<br/>Maps component names → React"]
         AF["AddressForm<br/>Agent: speed-optimised"]
         AV["ApprovalView<br/>Manager: governance-optimised"]
@@ -97,16 +97,16 @@ graph TB
 ```mermaid
 sequenceDiagram
     participant U as User
-    participant C as Chat UI
+    participant C as Platform Shell
     participant A as API Route
     participant L as Claude
     participant D as Data Store
 
-    U->>C: "Hi, I'm Sarah. Customer needs address update"
-    C->>A: POST /api/chat (messages array)
+    U->>C: Selects persona + clicks action (e.g. "Open Address Change Form")
+    C->>A: POST /api/chat (structured context: role, intent, customer)
     A->>L: streamText() with system prompt
 
-    Note over L: Step 1: Persona + intent detection
+    Note over L: Step 1: Read persona + intent from context
     L->>A: Call fetch_customer tool
     A->>D: getCustomer()
     D-->>A: Full 8-category customer record
@@ -120,7 +120,7 @@ sequenceDiagram
     L-->>A: Stream complete (text + tool results)
     A-->>C: Streamed response
     Note over C: Map "AddressForm" → <AddressForm /> React component
-    C->>U: Rendered address form with pre-filled data
+    C->>U: Rendered address form with pre-filled data (no prompt visible to user)
 ```
 
 ### The 4 Agentic Pillars
@@ -247,7 +247,7 @@ The POC ships with 5 seed customers covering a range of risk profiles, complianc
 canvas-poc/
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx                    # Chat interface + tool result rendering
+│   │   ├── page.tsx                    # Platform shell: persona selector, context panel, action triggers, canvas
 │   │   ├── layout.tsx                  # Root layout with metadata
 │   │   ├── globals.css                 # Brand theme (CSS variables, Urbanist font)
 │   │   ├── design-system/
@@ -318,15 +318,17 @@ npm run dev
 
 ### Usage
 
-Open [http://localhost:3000](http://localhost:3000) for the chat interface.
+Open [http://localhost:3000](http://localhost:3000) for the platform shell.
 
-Try these prompts to see persona-adaptive UI in action:
+The left panel simulates the platform context Canvas would receive in production (identity from SSO, open customer record, active task):
 
-**As an agent:**
-> "Hi, I'm Sarah. Mrs Miller has moved to 42 Oak Lane, Bristol BS1 4QR"
+1. **Select a persona** — Sarah (Call Centre Agent) or James (Case Manager)
+2. **Trigger an action** — click the role-appropriate button in the panel
+3. **Canvas renders** the right component on the right — no prompt, no chat
 
-**As a manager:**
-> "It's James, I need to review the pending address changes"
+**As Sarah:** optionally enter the customer's new address before clicking "Open Address Change Form" to pre-fill the form.
+
+**Guardrail test:** while signed in as Sarah, click "Try: Approve as Agent" to see the maker-checker policy enforced.
 
 Visit [http://localhost:3000/design-system](http://localhost:3000/design-system) for the component library showcase.
 
