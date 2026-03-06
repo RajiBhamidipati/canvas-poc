@@ -143,7 +143,7 @@ export function ApprovalView({
         body: JSON.stringify(payload),
       });
       setDecision(action);
-      onDecision?.(action);
+      if (action !== "pending") onDecision?.(action);
     } catch {
       // Silently fail for POC
     }
